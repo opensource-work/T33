@@ -1,0 +1,38 @@
+---
+apiVersion: apps/v1 
+kind: Deployment              #Controller - self healing
+metadata:
+  name: mongo-deployment
+  labels:
+    app: mongo
+    env: prod 
+spec: 
+  replicas: 2                #to create copies of following pod
+  selector:
+    matchLabels:
+      app: mongo
+  template:
+    metadata: 
+      name: mongo-pod 
+      labels:
+        app: mongo
+    spec:
+      containers:
+        - name: mongo 
+          image: mongo:latest 
+          ports:
+            - containerPort: 27017
+---
+apiVersion: v1 
+kind: Service 
+metadata:
+  name: mongo-deployment-clusterip-svc
+  labels:
+    app: mongo
+spec:
+  type: ClusterIP 
+  selector:
+    app: mongo
+  ports: 
+  - port: 27017                    # service ip port number
+    targetPort: 27107            # container port
